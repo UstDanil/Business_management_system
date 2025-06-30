@@ -118,7 +118,7 @@ class UserMeeting(Base):
 
 
 class Evaluation(Base):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="worker",п
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="worker",
                              verbose_name=_("Работник"), null=False)
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="task_name",
                              verbose_name=_("Задача"), null=True)
