@@ -1,0 +1,23 @@
+{% include 'components/navbar.html' %}
+<table>
+  <thead>
+    <tr>
+      <th>Название</th>
+      <th>Описание</th>
+      <th>Дедлайн</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% if tasks %}
+    {% for task in tasks %}
+      <tr>
+        <td>{{ task.name }}</td>
+        <td>{{ task.description }}</td>
+        <td>{{ task.deadline }}</td>
+      </tr>
+    {% endfor %}
+  {% else %}
+    <p>Задач не назначено</p>
+  {% endif %}
+  </tbody>
+</table>

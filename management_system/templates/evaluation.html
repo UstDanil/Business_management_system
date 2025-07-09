@@ -1,0 +1,36 @@
+{% include 'components/navbar.html' %}
+<table>
+  <thead>
+    <tr>
+      <th>Название задачи</th>
+      <th>Оценка</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% if user_evaluations %}
+    {% for user_evaluation in user_evaluations %}
+      <tr>
+        <td>{{ user_evaluation.task }}</td>
+        <td>{{ user_evaluation.mark }}</td>
+      </tr>
+    {% endfor %}
+  {% else %}
+    <p>Вы ещё не выполнили ни одной задачи</p>
+  {% endif %}
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Средняя оценка за период</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for average_mark in average_marks %}
+      <tr>
+        <td>{{ average_mark.month }}</td>
+        <td>{{ average_mark.avg_mark }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

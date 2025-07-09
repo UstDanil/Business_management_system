@@ -1,0 +1,22 @@
+{% include 'components/navbar.html' %}
+
+<table>
+  <thead>
+    <tr>
+      <th>Название команды</th>
+      <th>Роль</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% if user_teams %}
+    {% for user_team in user_teams %}
+      <tr>
+        <td>{{ user_team.team }}</td>
+        <td>{{ user_team.position }}</td>
+      </tr>
+    {% endfor %}
+  {% else %}
+    <p>Вы не состоите в команде</p>
+  {% endif %}
+  </tbody>
+</table>

@@ -1,0 +1,42 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--  <meta charset="UTF-8">-->
+<!--  <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--  <title>Title</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--{% if meetings %}-->
+<!--<ul>-->
+<!--  {% for meeting in meetings %}-->
+<!--      <li>{{ meeting.name }} {{ meeting.day }} {{ meeting.time }}</li>-->
+<!--  {% endfor %}-->
+<!--</ul>-->
+<!--{% else %}-->
+<!--  <p>Встреч не назначено</p>-->
+<!--{% endif %}-->
+<!--</body>-->
+<!--</html>-->
+{% include 'components/navbar.html' %}
+<table>
+  <thead>
+    <tr>
+      <th>Название встречи</th>
+      <th>Дата</th>
+      <th>Время</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% if meetings %}
+    {% for meeting in meetings %}
+      <tr>
+        <td>{{ meeting.name }}</td>
+        <td>{{ meeting.day }}</td>
+        <td>{{ meeting.time }}</td>
+      </tr>
+    {% endfor %}
+  {% else %}
+    <p>У вас нет назначенных встреч</p>
+  {% endif %}
+  </tbody>
+</table>
