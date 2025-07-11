@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}
+  Команда {{ object.name }}
+{% endblock %}
+
+{% block body %}
+  <h3>Команда {{ object.name }}</h3>
+  <div>
+    <form method="post" action="{% url 'management_system:team_detail' pk=object.pk %}">{% csrf_token %}
+       <input type="text" name="name" value="{{ object.name }}">
+      <button name="action" value="update" class="btn btn-primary">Изменить название</button>
+    <h4>Члены команды:</h4>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+                <th scope="col">Имя</th>
+                <th scope="col">Должность</th>
+            </tr>
+          </thead>
+          {% for member in object.team_members.all %}
+            <tr>
+                <th >{{ member.user }}</th>
+                <th>{{ member.position }}</th>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+<button name="action" value="delete" class="btn btn-primary">Удалить команду</button>
+      </form>
+  </div>
+{% endblock %}

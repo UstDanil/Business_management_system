@@ -1,4 +1,5 @@
 .env
+staticfiles
 config/__pycache__/
 management_system/__pycache__/
 management_system/migrations/__pycache__/

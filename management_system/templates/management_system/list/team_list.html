@@ -1,9 +1,10 @@
-{% extends 'index.html' %}
+{% extends 'base.html' %}
 
 {% block body %}
-<table>
+<h3>Команды</h3>
+<table class="table">
   <thead>
-    <tr>
+    <tr style="width: 300px;">
       <th>Название команды</th>
       <th>Роль</th>
     </tr>
@@ -11,7 +12,7 @@
   <tbody>
   {% if user_teams %}
     {% for user_team in user_teams %}
-      <tr>
+      <tr class="formset_row" style="width: 300px;">
         <td><a href="{% url 'management_system:team_detail' pk=user_team.team.id %}">{{ user_team.team }}</a></td>
         <td>{{ user_team.position }}</td>
       </tr>
@@ -21,4 +22,8 @@
   {% endif %}
   </tbody>
 </table>
+<br><br>
+  <button class="btn btn-primary" id="teamCreate">
+    <a href="{% url 'management_system:team_create'%}" style="color:white;">Создать команду</a>
+  </button>
 {% endblock %}

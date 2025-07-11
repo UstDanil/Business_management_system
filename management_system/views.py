@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.db.models import Avg, Func
 from django.db.models.functions import TruncMonth
 from django.views import View
@@ -12,7 +13,8 @@ from django.urls import reverse_lazy
 from datetime import date
 
 from .models import Meeting, Task, Team, UserTeam, Evaluation
-from .forms import RegisterForm, MeetingForm, TeamForm, TaskForm, EvaluationForm
+from .forms import (RegisterForm, MeetingForm, TeamForm, TaskForm, EvaluationForm,
+                    TeamMemberFormSet, MeetingMemberFormSet)
 
 
 class DateToChar(Func):
@@ -21,7 +23,7 @@ class DateToChar(Func):
 
 
 class AppLoginView(LoginView):
-    template_name = 'login.html'
+    template_name = 'auth/login.html'
     redirect_authenticated_user = True
     next_page = reverse_lazy("management_system:main_page")
 
@@ -34,7 +36,7 @@ class AppLogoutView(LoginRequiredMixin, View):
 
 class RegisterView(FormView):
     form_class = RegisterForm
-    template_name = 'registration/registration.html'
+    template_name = 'auth/registration.html'
     success_url = reverse_lazy("management_system:main_page")
 
     def form_valid(self, form):
@@ -47,7 +49,7 @@ class MainPageView(View):
     def get(self, request, *args, **kwargs):
         if not hasattr(request, "user") or isinstance(request.user, AnonymousUser):
             return redirect("management_system:login")
-        return render(request, 'index.html')
+        return render(request, 'base.html')
 
 
 class MeetingListView(View):
@@ -56,7 +58,7 @@ class MeetingListView(View):
             return redirect("management_system:login")
         user_meetings = Meeting.objects.filter(meeting_members__user=request.user)
         context = {"meetings": user_meetings}
-        return render(request, 'meetings.html', context=context)
+        return render(request, 'management_system/list/meeting_list.html', context=context)
 
 
 class MeetingDetailView(ModelFormMixin, DetailView):
@@ -75,9 +77,31 @@ class MeetingDetailView(ModelFormMixin, DetailView):
 
 
 class MeetingCreateView(CreateView):
-    form_class = MeetingForm
-    template_name = 'detail/meeting_detail.html'
+    model = Meeting
+    fields = ["name", "comments", "day", "time"]
+    template_name = 'management_system/create/meet_create.html'
     success_url = reverse_lazy("management_system:meeting")
+
+    def get_context_data(self, **kwargs):
+        data = super(MeetingCreateView, self).get_context_data(**kwargs)
+        if self.request.POST:
+            data['meeting'] = MeetingMemberFormSet(self.request.POST)
+        else:
+            data['meeting'] = MeetingMemberFormSet()
+        return data
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        meeting = context['meeting']
+        for member in meeting.cleaned_data:
+            print(f"meeting :{member}")
+        if form.is_valid() and meeting.is_valid():
+            self.object = form.save(commit=False)
+        with transaction.atomic():
+            self.object.save()
+            meeting.instance = self.object
+            meeting.save()
+        return super(MeetingCreateView, self).form_valid(form)
 
 
 class TaskListView(View):
@@ -86,12 +110,12 @@ class TaskListView(View):
             return redirect("management_system:login")
         user_tasks = Task.objects.filter(executor=request.user)
         context = {"tasks": user_tasks}
-        return render(request, 'tasks.html', context=context)
+        return render(request, 'management_system/list/task_list.html', context=context)
 
 
 class TaskDetailView(ModelFormMixin, DetailView):
     model = Task
-    template_name = 'detail/task_detail.html'
+    template_name = 'management_system/detail/task_detail.html'
     form_class = TaskForm
     success_url = reverse_lazy("management_system:task")
 
@@ -106,8 +130,12 @@ class TaskDetailView(ModelFormMixin, DetailView):
 
 class TaskCreateView(CreateView):
     form_class = TaskForm
-    template_name = 'detail/task_detail.html'
+    template_name = 'management_system/detail/task_detail.html'
     success_url = reverse_lazy("management_system:task")
+
+    def form_valid(self, form):
+        form.instance.creator = self.request.user
+        return super().form_valid(form)
 
 
 class TeamListView(View):
@@ -116,28 +144,49 @@ class TeamListView(View):
             return redirect("management_system:login")
         user_teams = UserTeam.objects.filter(user=request.user)
         context = {"user_teams": user_teams}
-        return render(request, 'teams.html', context=context)
+        return render(request, 'management_system/list/team_list.html', context=context)
 
 
-class TeamDetailView(ModelFormMixin, DetailView):
+class TeamDetailView(DetailView):
     model = Team
-    template_name = 'detail/team_detail.html'
-    form_class = TeamForm
-    success_url = reverse_lazy("management_system:team")
+    template_name = 'management_system/detail/team_detail.html'
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        form = self.get_form()
-        if form.is_valid():
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
+        if request.POST.get("action") == "update":
+            new_team_name = request.POST.get('name')
+            self.object.name = new_team_name
+            self.object.save()
+        elif request.POST.get("action") == "delete":
+            self.object.delete()
+        return redirect("management_system:team")
 
 
 class TeamCreateView(CreateView):
-    form_class = TeamForm
-    template_name = 'detail/team_detail.html'
+    model = Team
+    fields = ["name"]
+    template_name = 'management_system/create/team_create.html'
     success_url = reverse_lazy("management_system:team")
+
+    def get_context_data(self, **kwargs):
+        data = super(TeamCreateView, self).get_context_data(**kwargs)
+        if self.request.POST:
+            data['members'] = TeamMemberFormSet(self.request.POST)
+        else:
+            data['members'] = TeamMemberFormSet()
+        return data
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        members = context['members']
+        if form.is_valid() and members.is_valid():
+            form.instance.owner = self.request.user
+            self.object = form.save(commit=False)
+        with transaction.atomic():
+            self.object.save()
+            members.instance = self.object
+            members.save()
+        return super(TeamCreateView, self).form_valid(form)
 
 
 class EvaluationListView(View):
@@ -155,12 +204,12 @@ class EvaluationListView(View):
                 .annotate(avg_mark=Avg('mark')))
         context["average_marks"] = data
 
-        return render(request, 'evaluation.html', context=context)
+        return render(request, 'management_system/list/evaluation_list.html', context=context)
 
 
 class EvaluationDetailView(ModelFormMixin, DetailView):
     model = Evaluation
-    template_name = 'detail/evaluation_detail.html'
+    template_name = 'management_system/detail/evaluation_detail.html'
     form_class = EvaluationForm
     success_url = reverse_lazy("management_system:evaluation")
 
@@ -175,5 +224,5 @@ class EvaluationDetailView(ModelFormMixin, DetailView):
 
 class EvaluationCreateView(CreateView):
     form_class = EvaluationForm
-    template_name = 'detail/evaluation_detail.html'
+    template_name = 'management_system/detail/evaluation_detail.html'
     success_url = reverse_lazy("management_system:evaluation")

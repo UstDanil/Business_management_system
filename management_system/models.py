@@ -37,6 +37,8 @@ class User(AbstractUser, Base):
 
 class Team(Base):
     name = models.CharField(max_length=255, verbose_name=_("Название команды"))
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="teams_created",
+                              verbose_name=_("Руководитель команды"), null=False)
 
     class Meta:
         verbose_name = 'Команда'
@@ -56,7 +58,7 @@ class Task(Base):
     description = models.CharField(max_length=255, verbose_name=_("Описание"))
     status = models.CharField(max_length=11, choices=STATUS, verbose_name=_("Статус задачи"))
     comments = models.CharField(max_length=255, verbose_name=_("Комментарии к задаче"), null=True, blank=True)
-    deadline = models.DateTimeField(verbose_name=_("Крайний день исполнения"))
+    deadline = models.DateTimeField(verbose_name=_("Крайний срок исполнения"))
     executor = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks_executed",
                                  verbose_name=_("Исполнитель"), null=True, blank=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks_created",

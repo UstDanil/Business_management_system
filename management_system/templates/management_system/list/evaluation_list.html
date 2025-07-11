@@ -1,9 +1,10 @@
-{% extends 'index.html' %}
+{% extends 'base.html' %}
 
 {% block body %}
-<table>
+<h3>Оценки</h3>
+<table class="table">
   <thead>
-    <tr>
+    <tr style="width: 300px;">
       <th>Задача</th>
       <th>Описание</th>
       <th>Оценка</th>
@@ -13,7 +14,7 @@
   <tbody>
   {% if evaluations %}
     {% for evaluation in evaluations %}
-      <tr>
+      <tr class="formset_row" style="width: 300px;">
         <td><a href="{% url 'management_system:evaluation_detail' pk=evaluation.id %}">{{ evaluation.task }}</a></td>
         <td>{{ evaluation.task.description }}</td>
         <td>{{ evaluation.mark }}</td>
@@ -25,19 +26,26 @@
   {% endif %}
   </tbody>
 </table>
-<table>
+<br><br>
+<h3>Средние оценки по месяцам</h3>
+<table class="table">
   <thead>
-    <tr>
-      <th>Средняя оценка за период</th>
+    <tr style="width: 300px;">
+      <th>Месяц</th>
+      <th>Средняя оценка</th>
     </tr>
   </thead>
   <tbody>
     {% for average_mark in average_marks %}
-      <tr>
+      <tr class="formset_row" style="width: 300px;">
         <td>{{ average_mark.month }}</td>
         <td>{{ average_mark.avg_mark }}</td>
       </tr>
     {% endfor %}
   </tbody>
 </table>
+<br><br>
+  <button class="btn btn-primary" id="evaluationCreate">
+    <a href="{% url 'management_system:evaluation_create'%}" style="color:white;">Поставить оценку задаче</a>
+  </button>
 {% endblock %}

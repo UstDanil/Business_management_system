@@ -1,9 +1,10 @@
-{% extends 'index.html' %}
+{% extends 'base.html' %}
 
 {% block body %}
-<table>
+<h3>Задачи</h3>
+<table class="table">
   <thead>
-    <tr>
+    <tr style="width: 300px;">
       <th>Название</th>
       <th>Описание</th>
       <th>Дедлайн</th>
@@ -12,7 +13,7 @@
   <tbody>
   {% if tasks %}
     {% for task in tasks %}
-      <tr>
+      <tr class="formset_row" style="width: 300px;">
         <td><a href="{% url 'management_system:task_detail' pk=task.id %}">{{ task.name }}</a></td>
         <td>{{ task.description }}</td>
         <td>{{ task.deadline }}</td>
@@ -23,4 +24,8 @@
   {% endif %}
   </tbody>
 </table>
+<br><br>
+  <button class="btn btn-primary" id="taskCreate">
+    <a href="{% url 'management_system:task_create'%}" style="color:white;">Создать задачу</a>
+  </button>
 {% endblock %}

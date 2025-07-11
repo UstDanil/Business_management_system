@@ -1,9 +1,10 @@
-{% extends 'index.html' %}
+{% extends 'base.html' %}
 
 {% block body %}
-<table>
+<h3>Встречи</h3>
+<table class="table">
   <thead>
-    <tr>
+    <tr style="width: 300px;">
       <th>Название встречи</th>
       <th>Дата</th>
       <th>Время</th>
@@ -12,7 +13,7 @@
   <tbody>
   {% if meetings %}
     {% for meeting in meetings %}
-      <tr>
+      <tr class="formset_row" style="width: 300px;">
         <td><a href="{% url 'management_system:meeting_detail' pk=meeting.id %}">{{ meeting.name }}</a></td>
         <td>{{ meeting.day }}</td>
         <td>{{ meeting.time }}</td>
@@ -23,4 +24,7 @@
   {% endif %}
   </tbody>
 </table>
+ <button class="btn btn-primary" id="meetingCreate">
+    <a href="{% url 'management_system:meeting_create'%}" style="color:white;">Создать встречу</a>
+  </button>
 {% endblock %}
