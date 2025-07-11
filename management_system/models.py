@@ -75,9 +75,9 @@ class UserTeam(Base):
         'worker': 'worker',
         'manager': 'manager',
     }
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="team_member",
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_teams",
                              verbose_name=_("Член команды"), null=False)
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="team_name",
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="team_members",
                              verbose_name=_("Название команды"), null=False)
     position = models.CharField(max_length=7, choices=POSITION, verbose_name=_("Роль в команде"))
 

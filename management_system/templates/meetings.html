@@ -1,23 +1,6 @@
-<!--<!DOCTYPE html>-->
-<!--<html lang="en">-->
-<!--<head>-->
-<!--  <meta charset="UTF-8">-->
-<!--  <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
-<!--  <title>Title</title>-->
-<!--</head>-->
-<!--<body>-->
-<!--{% if meetings %}-->
-<!--<ul>-->
-<!--  {% for meeting in meetings %}-->
-<!--      <li>{{ meeting.name }} {{ meeting.day }} {{ meeting.time }}</li>-->
-<!--  {% endfor %}-->
-<!--</ul>-->
-<!--{% else %}-->
-<!--  <p>Встреч не назначено</p>-->
-<!--{% endif %}-->
-<!--</body>-->
-<!--</html>-->
-{% include 'components/navbar.html' %}
+{% extends 'index.html' %}
+
+{% block body %}
 <table>
   <thead>
     <tr>
@@ -30,7 +13,7 @@
   {% if meetings %}
     {% for meeting in meetings %}
       <tr>
-        <td>{{ meeting.name }}</td>
+        <td><a href="{% url 'management_system:meeting_detail' pk=meeting.id %}">{{ meeting.name }}</a></td>
         <td>{{ meeting.day }}</td>
         <td>{{ meeting.time }}</td>
       </tr>
@@ -40,3 +23,4 @@
   {% endif %}
   </tbody>
 </table>
+{% endblock %}

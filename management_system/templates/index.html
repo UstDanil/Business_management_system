@@ -3,20 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Title</title>
+  <title>{% block title %}
+    Система управления
+  {% endblock title %}</title>
 </head>
 <body>
-  <nav class="navbar bg-body-tertiary">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">Navbar</a>
-      {% if request.user.is_authenticated %}
-        <h3>{{ request.user }}</h3>
-        <a class="navbar-brand" href="{% url 'management_sys:logout' %}">Выйти</a>
-        <h3>HIIIIIIII, {{ request.user.username }}</h3>
-        {% else %}
-        <a class="navbar-brand" href="{% url 'management_sys:login' %}">Войти</a>
-      {% endif %}
-    </div>
-  </nav>
+  {% include 'components/navbar.html' %}
+  {% block body %}
+  <h1><a href="{% url 'management_system:task' %}">Task</a></h1>
+  <h1><a href="{% url 'management_system:evaluation' %}">Evaluation</a></h1>
+  <h1><a href="{% url 'management_system:team' %}">Team</a></h1>
+  <h1><a href="{% url 'management_system:meeting' %}">Meetings</a></h1>
+  {% endblock body %}
+ <footer>
+   {% block footer %}
+    {% endblock %}
+ </footer>
 </body>
 </html>

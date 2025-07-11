@@ -1,5 +1,6 @@
-{% include 'components/navbar.html' %}
+{% extends 'index.html' %}
 
+{% block body %}
 <table>
   <thead>
     <tr>
@@ -11,7 +12,7 @@
   {% if user_teams %}
     {% for user_team in user_teams %}
       <tr>
-        <td>{{ user_team.team }}</td>
+        <td><a href="{% url 'management_system:team_detail' pk=user_team.team.id %}">{{ user_team.team }}</a></td>
         <td>{{ user_team.position }}</td>
       </tr>
     {% endfor %}
@@ -20,3 +21,4 @@
   {% endif %}
   </tbody>
 </table>
+{% endblock %}

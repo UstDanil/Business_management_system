@@ -1,17 +1,23 @@
-{% include 'components/navbar.html' %}
+{% extends 'index.html' %}
+
+{% block body %}
 <table>
   <thead>
     <tr>
-      <th>Название задачи</th>
+      <th>Задача</th>
+      <th>Описание</th>
       <th>Оценка</th>
+      <th>Дата оценки</th>
     </tr>
   </thead>
   <tbody>
-  {% if user_evaluations %}
-    {% for user_evaluation in user_evaluations %}
+  {% if evaluations %}
+    {% for evaluation in evaluations %}
       <tr>
-        <td>{{ user_evaluation.task }}</td>
-        <td>{{ user_evaluation.mark }}</td>
+        <td><a href="{% url 'management_system:evaluation_detail' pk=evaluation.id %}">{{ evaluation.task }}</a></td>
+        <td>{{ evaluation.task.description }}</td>
+        <td>{{ evaluation.mark }}</td>
+        <td>{{ evaluation.created_at }}</td>
       </tr>
     {% endfor %}
   {% else %}
@@ -34,3 +40,4 @@
     {% endfor %}
   </tbody>
 </table>
+{% endblock %}
