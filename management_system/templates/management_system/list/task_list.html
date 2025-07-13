@@ -25,7 +25,9 @@
   </tbody>
 </table>
 <br><br>
-  <button class="btn btn-primary" id="taskCreate">
-    <a href="{% url 'management_system:task_create'%}" style="color:white;">Создать задачу</a>
-  </button>
+  {% if user.role != "worker" %}
+    <button class="btn btn-primary" id="taskCreate">
+      <a href="{% url 'management_system:task_create'%}" style="color:white;">Создать задачу</a>
+    </button>
+  {% endif %}
 {% endblock %}

@@ -23,7 +23,9 @@
   </tbody>
 </table>
 <br><br>
+{% if user.role != "worker" %}
   <button class="btn btn-primary" id="teamCreate">
     <a href="{% url 'management_system:team_create'%}" style="color:white;">Создать команду</a>
   </button>
+{% endif %}
 {% endblock %}

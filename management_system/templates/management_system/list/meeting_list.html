@@ -24,7 +24,9 @@
   {% endif %}
   </tbody>
 </table>
+{% if user.role != "worker" %}
  <button class="btn btn-primary" id="meetingCreate">
     <a href="{% url 'management_system:meeting_create'%}" style="color:white;">Создать встречу</a>
   </button>
+{% endif %}
 {% endblock %}

@@ -4,6 +4,10 @@
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
+    {% if not readonly %}
     <button type="submit">Сохранить</button>
+    <br><br>
+    <button name="action" value="delete" class="btn btn-primary">Удалить оценку</button>
+    {% endif %}
 </form>
 {% endblock %}

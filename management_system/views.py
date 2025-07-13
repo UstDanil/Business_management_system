@@ -1,5 +1,5 @@
 from django.db import transaction
-from django.db.models import Avg, Func
+from django.db.models import Avg, Func, Q
 from django.db.models.functions import TruncMonth
 from django.views import View
 from django.views.generic import FormView, DetailView, CreateView
@@ -63,17 +63,36 @@ class MeetingListView(View):
 
 class MeetingDetailView(ModelFormMixin, DetailView):
     model = Meeting
-    template_name = 'detail/meeting_detail.html'
+    template_name = 'management_system/detail/meeting_detail.html'
     form_class = MeetingForm
     success_url = reverse_lazy("management_system:meeting")
+
+    def get_form_kwargs(self):
+        meeting = self.get_object()
+        user = self.request.user
+        kwargs = super(MeetingDetailView, self).get_form_kwargs()
+        if user.role != 'admin' and meeting.creator != user:
+            kwargs.update({'readonly': True})
+        return kwargs
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         form = self.get_form()
+        if request.POST.get("action") == "delete":
+            self.object.delete()
+            return redirect("management_system:meeting")
         if form.is_valid():
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        meeting = self.get_object()
+        user = self.request.user
+        context = super().get_context_data(**kwargs)
+        if user.role != 'admin' and meeting.creator != user:
+            context["readonly"] = True
+        return context
 
 
 class MeetingCreateView(CreateView):
@@ -91,10 +110,9 @@ class MeetingCreateView(CreateView):
         return data
 
     def form_valid(self, form):
+        form.instance.creator = self.request.user
         context = self.get_context_data()
         meeting = context['meeting']
-        for member in meeting.cleaned_data:
-            print(f"meeting :{member}")
         if form.is_valid() and meeting.is_valid():
             self.object = form.save(commit=False)
         with transaction.atomic():
@@ -108,7 +126,7 @@ class TaskListView(View):
     def get(self, request, *args, **kwargs):
         if not hasattr(request, "user") or isinstance(request.user, AnonymousUser):
             return redirect("management_system:login")
-        user_tasks = Task.objects.filter(executor=request.user)
+        user_tasks = Task.objects.filter(Q(executor=request.user) | Q(creator=request.user))
         context = {"tasks": user_tasks}
         return render(request, 'management_system/list/task_list.html', context=context)
 
@@ -119,13 +137,32 @@ class TaskDetailView(ModelFormMixin, DetailView):
     form_class = TaskForm
     success_url = reverse_lazy("management_system:task")
 
+    def get_form_kwargs(self):
+        task = self.get_object()
+        user = self.request.user
+        kwargs = super(TaskDetailView, self).get_form_kwargs()
+        if user.role != 'admin' and task.creator != user:
+            kwargs.update({'readonly': True})
+        return kwargs
+
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         form = self.get_form()
+        if request.POST.get("action") == "delete":
+            self.object.delete()
+            return redirect("management_system:task")
         if form.is_valid():
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        task = self.get_object()
+        user = self.request.user
+        context = super().get_context_data(**kwargs)
+        if user.role != 'admin' and task.creator != user:
+            context["readonly"] = True
+        return context
 
 
 class TaskCreateView(CreateView):
@@ -160,6 +197,14 @@ class TeamDetailView(DetailView):
         elif request.POST.get("action") == "delete":
             self.object.delete()
         return redirect("management_system:team")
+
+    def get_context_data(self, **kwargs):
+        team = self.get_object()
+        user = self.request.user
+        context = super().get_context_data(**kwargs)
+        if user.role != 'admin' and team.owner != user:
+            context["readonly"] = True
+        return context
 
 
 class TeamCreateView(CreateView):
@@ -213,13 +258,32 @@ class EvaluationDetailView(ModelFormMixin, DetailView):
     form_class = EvaluationForm
     success_url = reverse_lazy("management_system:evaluation")
 
+    def get_form_kwargs(self):
+        evaluation = self.get_object()
+        user = self.request.user
+        kwargs = super(EvaluationDetailView, self).get_form_kwargs()
+        if user.role != 'admin' and evaluation.task.creator != user:
+            kwargs.update({'readonly': True})
+        return kwargs
+
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         form = self.get_form()
+        if request.POST.get("action") == "delete":
+            self.object.delete()
+            return redirect("management_system:evaluation")
         if form.is_valid():
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        evaluation = self.get_object()
+        user = self.request.user
+        context = super().get_context_data(**kwargs)
+        if user.role != 'admin' and evaluation.task.creator != user:\
+            context["readonly"] = True
+        return context
 
 
 class EvaluationCreateView(CreateView):

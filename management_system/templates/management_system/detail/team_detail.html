@@ -10,8 +10,10 @@
   <h3>Команда {{ object.name }}</h3>
   <div>
     <form method="post" action="{% url 'management_system:team_detail' pk=object.pk %}">{% csrf_token %}
-       <input type="text" name="name" value="{{ object.name }}">
+       <input type="text" name="name" value="{{ object.name }}" {% if readonly %}disabled{%endif%}>
+    {% if not readonly %}
       <button name="action" value="update" class="btn btn-primary">Изменить название</button>
+    {% endif %}
     <h4>Члены команды:</h4>
       <div class="table-responsive">
         <table class="table">
@@ -29,7 +31,9 @@
           {% endfor %}
         </table>
       </div>
+    {% if not readonly %}
 <button name="action" value="delete" class="btn btn-primary">Удалить команду</button>
+    {% endif %}
       </form>
   </div>
 {% endblock %}

@@ -45,7 +45,9 @@
   </tbody>
 </table>
 <br><br>
-  <button class="btn btn-primary" id="evaluationCreate">
-    <a href="{% url 'management_system:evaluation_create'%}" style="color:white;">Поставить оценку задаче</a>
-  </button>
+  {% if user.role != "worker" %}
+    <button class="btn btn-primary" id="evaluationCreate">
+      <a href="{% url 'management_system:evaluation_create'%}" style="color:white;">Поставить оценку задаче</a>
+    </button>
+  {% endif %}
 {% endblock %}

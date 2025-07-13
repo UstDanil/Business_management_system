@@ -96,6 +96,8 @@ class Meeting(Base):
     comments = models.TextField(verbose_name=_("Комментарии"))
     day = models.DateField(max_length=255, verbose_name=_("День встречи"))
     time = models.TimeField(max_length=255, verbose_name=_("Время встречи"))
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="meetings_created",
+                                verbose_name=_("Создал встречу"), null=False)
 
     class Meta:
         verbose_name = 'Встреча'
