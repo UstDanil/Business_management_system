@@ -40,6 +40,7 @@ class RegisterView(FormView):
     success_url = reverse_lazy("management_system:main_page")
 
     def form_valid(self, form):
+        form.instance.role = 'worker'
         user = form.save()
         login(self.request, user)
         return super().form_valid(form)

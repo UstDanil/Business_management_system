@@ -1,0 +1,25 @@
+services:
+
+  bms-db:
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: db/Dockerfile
+    ports:
+      - "127.0.0.1:${BMS_DB_LOCAL_PORT}:5432"
+
+  bms-api:
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    ports:
+      - "${BMS_APP_LOCAL_PORT}:8000"
+    depends_on:
+      - bms-db
+
+networks:
+  bms-network:
+    driver: bridge

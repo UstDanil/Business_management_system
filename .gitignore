@@ -1,5 +1,5 @@
 .env
-staticfiles
-config/__pycache__/
-management_system/__pycache__/
-management_system/migrations/__pycache__/
+app/app/src/staticfiles
+app/app/src/config/__pycache__/
+app/app/src/management_system/__pycache__/
+app/app/src/management_system/migrations/__pycache__/

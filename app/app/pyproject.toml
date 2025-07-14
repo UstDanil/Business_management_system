@@ -1,0 +1,11 @@
+[tool.poetry]
+name = "Business management system api"
+version = "1"
+description = ""
+authors = ["Kuzin Danil"]
+
+[tool.poetry.dependencies]
+python="^3.11"
+django="^5.1.5"
+gunicorn="^21.2.0"
+psycopg2="^2.9.9"
